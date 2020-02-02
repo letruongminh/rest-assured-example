@@ -2,7 +2,14 @@ package minhtester;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import model.Student;
+
+import model.Student;
+import org.hamcrest.Matcher;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.testng.annotations.Test;
 
 import java.net.URISyntaxException;
@@ -78,5 +85,23 @@ public class TestRequest {
                 .get("/unknown/{id}", 23);
         resp.prettyPrint();
         resp.then().statusCode(404);
+    }
+
+    @Test
+    public void testCreateNewUser(){
+        RestAssured.baseURI = "https://reqres.in/";
+        RestAssured.basePath = "/api/users/";
+        Student student = Student.getStudent();
+        student.setName( "morpheus" );
+        student.setJob( "leader" );
+
+        Response resp = RestAssured.given()
+                                    .contentType(ContentType.JSON)
+                                    .when()
+                                    .body(student)
+                                    .post();
+        resp.getBody();
+        resp.prettyPrint();
+        resp.then().statusCode(201);
     }
 }
